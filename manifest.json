@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "文档比对工具",
+    "version": "1.0",
+    "description": "一个 Chrome 扩展，用于比对需求文档和概要设计文档。",
+    "permissions": [
+        "storage"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    }
+}

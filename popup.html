@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档比对工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>文档比对工具</h1>
+
+        <label for="requirementFile">上传需求文档：</label>
+        <div class="file-container">
+            <input type="text" id="requirementFileName" class="file-input" placeholder="请选择需求文档" readonly>
+            <label class="custom-file-upload">
+                选择文件
+                <input type="file" id="requirementFile" accept=".docx">
+            </label>
+        </div>
+
+        <label for="designFile">上传概要设计文档：</label>
+        <div class="file-container">
+            <input type="text" id="designFileName" class="file-input" placeholder="请选择概要设计文档" readonly>
+            <label class="custom-file-upload">
+                选择文件
+                <input type="file" id="designFile" accept=".docx">
+            </label>
+        </div>
+
+        <button id="compareBtn">开始比对</button>
+        <div id="result"></div>
+    </div>
+
+    <script src="mammoth.browser.min.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>
