@@ -12,26 +12,94 @@
     <div class="container">
         <h1>文档比对工具</h1>
 
-        <label for="requirementFile">上传需求文档：</label>
-        <div class="file-container">
-            <input type="text" id="requirementFileName" class="file-input" placeholder="请选择需求文档" readonly>
-            <label class="custom-file-upload">
-                选择文件
-                <input type="file" id="requirementFile" accept=".docx">
-            </label>
+        <!-- 页签导航 -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="upload">文件上传</button>
+            <button class="tab-btn" data-tab="check">检查</button>
         </div>
 
-        <label for="designFile">上传概要设计文档：</label>
-        <div class="file-container">
-            <input type="text" id="designFileName" class="file-input" placeholder="请选择概要设计文档" readonly>
-            <label class="custom-file-upload">
-                选择文件
-                <input type="file" id="designFile" accept=".docx">
-            </label>
+        <!-- 文件上传页签 -->
+        <div class="tab-content active" id="upload-tab">
+            <h2>文件上传</h2>
+
+            <label for="requirementFile">上传需求文档：</label>
+            <div class="file-container">
+                <input type="text" id="requirementFileName" class="file-input" placeholder="请选择需求文档" readonly>
+                <label class="custom-file-upload">
+                    选择文件
+                    <input type="file" id="requirementFile" accept=".docx">
+                </label>
+            </div>
+
+            <label for="designFile">上传概要设计文档：</label>
+            <div class="file-container">
+                <input type="text" id="designFileName" class="file-input" placeholder="请选择概要设计文档" readonly>
+                <label class="custom-file-upload">
+                    选择文件
+                    <input type="file" id="designFile" accept=".docx">
+                </label>
+            </div>
+            <button id="gotoCheckBtn" class="check-btn" style="margin-top:24px;width:100%;">去检查</button>
         </div>
 
-        <button id="compareBtn">开始比对</button>
-        <div id="result"></div>
+        <!-- 检查页签 -->
+        <div class="tab-content" id="check-tab">
+            <h2>检查</h2>
+
+            <div class="checklist">
+                <form id="checklistForm">
+                    <div class="checklist-item">
+                        <span>1. 文档名称是否正确</span>
+                        <label><input type="radio" name="docName" value="yes"> 是</label>
+                        <label><input type="radio" name="docName" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <input type="text" id="crNameInput" class="cr-name-input" placeholder="请输入CR编号">
+                        <button type="button" id="checkCRBtn" class="check-btn">检查</button>
+                    </div>
+                    <div class="checklist-item">
+                        <span>2. 需求标题是否正确</span>
+                        <label><input type="radio" name="requirementTitle" value="yes"> 是</label>
+                        <label><input type="radio" name="requirementTitle" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <input type="text" id="requirementTitleInput" class="cr-name-input" placeholder="请请复制vp系统CR名称">
+                        <button type="button" id="checkTitleBtn" class="check-btn">检查</button>
+                    </div>
+                    <div class="checklist-item">
+                        <span>3. 功能编号和名称是否匹配</span>
+                        <label><input type="radio" name="funcMatch" value="yes"> 是</label>
+                        <label><input type="radio" name="funcMatch" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <button type="button" id="checkFuncMatchBtn" class="check-btn">检查</button>
+                    </div>
+                    <div id="result"></div>
+                    <div class="checklist-item">
+                        <span>4. 功能模块是否匹配</span>
+                        <label><input type="radio" name="moduleCheck" value="yes"> 是</label>
+                        <label><input type="radio" name="moduleCheck" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <button type="button" id="checkModuleBtn" class="check-btn">检查</button>
+                    </div>
+                    <div class="checklist-item">
+                        <span>5. 填写人员是否符合要求</span>
+                        <label><input type="radio" name="fillerValid" value="yes"> 是</label>
+                        <label><input type="radio" name="fillerValid" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <button type="button" id="checkPersonBtn" class="check-btn">检查</button>
+                    </div>
+                    <div id="personResult"></div>
+                    <div class="checklist-item">
+                        <span>6. 需求文档中接口设计是否存在"无"或"不涉及"</span>
+                        <label><input type="radio" name="interfaceNone" value="yes"> 是</label>
+                        <label><input type="radio" name="interfaceNone" value="no"> 否</label>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script src="mammoth.browser.min.js"></script>

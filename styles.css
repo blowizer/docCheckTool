@@ -15,7 +15,11 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    width: 80vw;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 0 auto;
 }
 
 h1 {
@@ -89,6 +93,55 @@ button:hover {
     background-color: #f8f9fa;
     font-size: 14px;
     color: #333;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+}
+
+#result::-webkit-scrollbar {
+    width: 8px;
+}
+
+#result::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#result::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#result::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+#moduleResult {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+#moduleResult::-webkit-scrollbar {
+    width: 8px;
+}
+
+#moduleResult::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#moduleResult::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#moduleResult::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .error {
@@ -97,4 +150,284 @@ button:hover {
 
 .success {
     color: green;
+}
+
+.checklist {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px 12px 8px 12px;
+    margin: 0 0 10px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    text-align: left;
+}
+
+.checklist h3 {
+    font-size: 18px;
+    color: #007bff;
+    margin-bottom: 12px;
+    margin-top: 0;
+    text-align: left;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ececec;
+    font-size: 15px;
+    position: relative;
+}
+
+.checklist-item:last-child {
+    border-bottom: none;
+}
+
+.checklist-item span {
+    flex: 1;
+    color: #333;
+}
+
+.checklist-item label {
+    margin-left: 18px;
+    font-weight: normal;
+    color: #555;
+    font-size: 15px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+}
+
+.checklist-item input[type="radio"] {
+    margin-right: 4px;
+    accent-color: #007bff;
+    width: 16px;
+    height: 16px;
+}
+
+.checklist-item .status-icon {
+    margin-left: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    width: 20px;
+    text-align: center;
+}
+
+.checklist-item .status-icon.success {
+    color: #28a745;
+}
+
+.checklist-item .status-icon.error {
+    color: #dc3545;
+}
+
+/* 页签导航样式 */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    margin: 0;
+    width: auto;
+}
+
+.tab-btn:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: #fff;
+}
+
+/* 页签内容样式 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.tab-content h3 {
+    color: #007bff;
+    font-size: 18px;
+    margin-bottom: 12px;
+    margin-top: 0;
+    text-align: left;
+}
+
+/* CR名称输入框样式 */
+.cr-name-input-container {
+    margin: 8px 0 12px 0;
+    padding: 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cr-name-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.cr-name-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.cr-name-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.check-btn {
+    align-self: flex-start;
+    padding: 6px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.check-btn:hover {
+    background-color: #218838;
+}
+
+.check-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* 错误详情样式 */
+.error-details {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 8px 0 12px 0;
+    font-size: 13px;
+    color: #856404;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #d63031;
+}
+
+.error-item {
+    margin-bottom: 6px;
+    padding: 4px 0;
+}
+
+.error-item:last-child {
+    margin-bottom: 0;
+}
+
+.error-label {
+    font-weight: bold;
+    color: #2d3436;
+    margin-right: 8px;
+}
+
+.error-expected {
+    color: #00b894;
+    margin-right: 12px;
+}
+
+.error-actual {
+    color: #e17055;
+}
+
+/* 新版布局样式 */
+.upload-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.upload-col {
+    flex: 1;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media (max-width: 700px) {
+    .upload-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+.main-btn {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 18px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    margin-top: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.main-btn:hover {
+    background: #0056b3;
+}
+
+.checklist-group {
+    margin-bottom: 32px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.checklist-title {
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 12px;
+    font-size: 16px;
 }
