@@ -254,6 +254,40 @@ window.addEventListener('DOMContentLoaded', function () {
     if (oneClickCheckBtn) {
         oneClickCheckBtn.addEventListener('click', performOneClickCheck);
     }
+
+    // 导出结果按钮
+    const exportResultBtn = document.getElementById('exportResultBtn');
+    if (exportResultBtn) {
+        exportResultBtn.addEventListener('click', exportCheckResults);
+    }
+
+    // 导出格式选择器
+    const exportFormatSelect = document.getElementById('exportFormat');
+    if (exportFormatSelect) {
+        exportFormatSelect.addEventListener('change', function () {
+            if (this.value) {
+                // 添加导出中状态
+                this.classList.add('exporting');
+                this.disabled = true;
+
+                // 延迟一下让用户看到加载动画
+                setTimeout(() => {
+                    exportCheckResults(this.value);
+
+                    // 显示成功状态
+                    this.classList.remove('exporting');
+                    this.classList.add('success');
+
+                    // 2秒后恢复状态
+                    setTimeout(() => {
+                        this.classList.remove('success');
+                        this.disabled = false;
+                        this.value = '';
+                    }, 2000);
+                }, 500);
+            }
+        });
+    }
 });
 
 // CR名称检查功能
@@ -1495,4 +1529,325 @@ async function checkDesignInterfaceRequirementAsync() {
                 reject(error);
             });
     });
+}
+
+// 导出检查结果功能
+function exportCheckResults(format) {
+    const exportFormatSelect = document.getElementById('exportFormat');
+
+    // 检查是否已经进行了检查
+    const checklistItems = document.querySelectorAll('.checklist-item');
+    let hasResults = false;
+
+    checklistItems.forEach(item => {
+        const statusIcon = item.querySelector('.status-icon');
+        if (statusIcon) {
+            hasResults = true;
+        }
+    });
+
+    if (!hasResults) {
+        // 使用更友好的提示方式
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            z-index: 1000;
+            font-size: 14px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        notification.textContent = '请先进行一键检查，然后再导出结果';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+
+        return;
+    }
+
+    try {
+        // 收集检查结果
+        const results = collectCheckResults();
+
+        // 生成导出内容
+        const exportContent = format === 'csv' ?
+            generateCSVContent(results) :
+            generateExportContent(results);
+
+        // 创建并下载文件
+        downloadFile(exportContent, format);
+
+        // 显示成功提示
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+            font-size: 14px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        notification.textContent = `检查结果已成功导出为 ${format.toUpperCase()} 格式！`;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+
+    } catch (error) {
+        console.error('导出失败:', error);
+
+        // 显示错误提示
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            z-index: 1000;
+            font-size: 14px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        notification.textContent = '导出失败，请重试';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+}
+
+// 收集检查结果
+function collectCheckResults() {
+    const results = [];
+    const crNameInput = document.getElementById('crNameInput');
+    const requirementTitleInput = document.getElementById('requirementTitleInput');
+
+    // 检查项目配置
+    const checkItems = [
+        {
+            name: 'docName',
+            title: '1. 文档名称是否正确',
+            description: '检查需求文档和概要设计文档的文件名是否符合规范'
+        },
+        {
+            name: 'requirementTitle',
+            title: '2. 需求标题是否正确',
+            description: '检查需求文档中的标题是否与输入的标题一致'
+        },
+        {
+            name: 'funcMatch',
+            title: '3. 功能编号和名称是否匹配',
+            description: '检查需求文档和概要设计文档中的功能编号和名称是否一致'
+        },
+        {
+            name: 'moduleCheck',
+            title: '4. 功能模块是否匹配',
+            description: '检查概要设计文档中的功能模块表与汇总表是否一致'
+        },
+        {
+            name: 'fillerValid',
+            title: '5. 填写人员是否符合要求',
+            description: '检查文档中的起草人、修订人、复核人是否在固定人员名单中'
+        },
+        {
+            name: 'interfaceNone',
+            title: '6. 需求文档中接口设计是否存在"无"或"不涉及"',
+            description: '检查需求文档的外部接口需求章节是否包含"无"或"不涉及"'
+        },
+        {
+            name: 'designInterfaceNone',
+            title: '7. 概要设计文档中接口是否存在"无"或"不涉及"',
+            description: '检查概要设计文档的用户接口、外部接口、内部接口章节是否包含"无"或"不涉及"'
+        }
+    ];
+
+    // 收集每个检查项的结果
+    checkItems.forEach(item => {
+        const radioBtn = document.querySelector(`input[name="${item.name}"]:checked`);
+        const statusIcon = document.querySelector(`input[name="${item.name}"]`).closest('.checklist-item').querySelector('.status-icon');
+        const errorDetails = document.getElementById(`${item.name}-error-details`);
+
+        let status = '未检查';
+        let result = '';
+
+        if (radioBtn) {
+            status = radioBtn.value === 'yes' ? '通过' : '不通过';
+
+            if (statusIcon) {
+                result = statusIcon.textContent === '✓' ? '通过' : '不通过';
+            }
+
+            // 获取详细结果
+            if (errorDetails) {
+                result = errorDetails.textContent.trim();
+            } else if (status === '通过') {
+                // 根据检查项类型设置通过时的结果描述
+                switch (item.name) {
+                    case 'docName':
+                        result = '文档名称符合规范';
+                        break;
+                    case 'requirementTitle':
+                        result = '需求标题正确';
+                        break;
+                    case 'funcMatch':
+                        result = '功能编号和名称匹配';
+                        break;
+                    case 'moduleCheck':
+                        result = '功能模块匹配';
+                        break;
+                    case 'fillerValid':
+                        result = '填写人员符合要求';
+                        break;
+                    case 'interfaceNone':
+                        result = '接口需求描述正确';
+                        break;
+                    case 'designInterfaceNone':
+                        result = '接口设计描述正确';
+                        break;
+                    default:
+                        result = '检查通过';
+                }
+            }
+        }
+
+        results.push({
+            title: item.title,
+            description: item.description,
+            status: status,
+            result: result
+        });
+    });
+
+    return results;
+}
+
+// 生成导出内容
+function generateExportContent(results) {
+    const crNameInput = document.getElementById('crNameInput');
+    const requirementTitleInput = document.getElementById('requirementTitleInput');
+    const requirementFile = document.getElementById('requirementFile').files[0];
+    const designFile = document.getElementById('designFile').files[0];
+
+    const now = new Date();
+    const timestamp = now.toLocaleString('zh-CN');
+
+    let content = `文档比对检查结果报告\n`;
+    content += `生成时间：${timestamp}\n`;
+    content += `CR编号：${crNameInput.value.trim() || '未输入'}\n`;
+    content += `需求标题：${requirementTitleInput.value.trim() || '未输入'}\n`;
+    content += `需求文档：${requirementFile ? requirementFile.name : '未上传'}\n`;
+    content += `概要设计文档：${designFile ? designFile.name : '未上传'}\n`;
+    content += `\n`;
+    content += `检查项目\t是否通过\t检查结果\n`;
+    content += `─`.repeat(80) + `\n`;
+
+    results.forEach(item => {
+        content += `${item.title}\t${item.status}\t${item.result}\n`;
+    });
+
+    content += `\n`;
+    content += `检查项目详细说明：\n`;
+    content += `─`.repeat(80) + `\n`;
+
+    results.forEach(item => {
+        content += `${item.title}\n`;
+        content += `说明：${item.description}\n`;
+        content += `状态：${item.status}\n`;
+        content += `结果：${item.result}\n`;
+        content += `\n`;
+    });
+
+    return content;
+}
+
+// 生成CSV格式内容
+function generateCSVContent(results) {
+    const crNameInput = document.getElementById('crNameInput');
+    const requirementTitleInput = document.getElementById('requirementTitleInput');
+    const requirementFile = document.getElementById('requirementFile').files[0];
+    const designFile = document.getElementById('designFile').files[0];
+
+    const now = new Date();
+    const timestamp = now.toLocaleString('zh-CN');
+
+    // CSV头部信息
+    let csvContent = `文档比对检查结果报告\n`;
+    csvContent += `生成时间,${timestamp}\n`;
+    csvContent += `CR编号,${crNameInput.value.trim() || '未输入'}\n`;
+    csvContent += `需求标题,${requirementTitleInput.value.trim() || '未输入'}\n`;
+    csvContent += `需求文档,${requirementFile ? requirementFile.name : '未上传'}\n`;
+    csvContent += `概要设计文档,${designFile ? designFile.name : '未上传'}\n`;
+    csvContent += `\n`;
+
+    // CSV表头
+    csvContent += `检查项目,是否通过,检查结果,详细说明\n`;
+
+    // CSV数据行
+    results.forEach(item => {
+        // 处理CSV中的特殊字符（逗号、引号、换行符）
+        const title = escapeCSVField(item.title);
+        const status = escapeCSVField(item.status);
+        const result = escapeCSVField(item.result);
+        const description = escapeCSVField(item.description);
+
+        csvContent += `${title},${status},${result},${description}\n`;
+    });
+
+    return csvContent;
+}
+
+// 转义CSV字段中的特殊字符
+function escapeCSVField(field) {
+    if (!field) return '';
+
+    // 如果字段包含逗号、引号或换行符，需要用引号包围
+    if (field.includes(',') || field.includes('"') || field.includes('\n') || field.includes('\r')) {
+        // 将字段中的引号替换为两个引号
+        const escapedField = field.replace(/"/g, '""');
+        return `"${escapedField}"`;
+    }
+
+    return field;
+}
+
+// 下载文件
+function downloadFile(content, format) {
+    const crNameInput = document.getElementById('crNameInput');
+    const crNumber = crNameInput.value.trim() || '未知';
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+
+    const filename = `检查结果_${crNumber}_${dateStr}_${timeStr}.${format}`;
+
+    const blob = new Blob([content], { type: `text/${format};charset=utf-8` });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
