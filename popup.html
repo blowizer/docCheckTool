@@ -46,6 +46,11 @@
         <div class="tab-content" id="check-tab">
             <h2>检查</h2>
 
+            <!-- 一键检查按钮 -->
+            <div class="one-click-check-container">
+                <button type="button" id="oneClickCheckBtn" class="check-btn one-click-btn">一键检查</button>
+            </div>
+
             <div class="checklist">
                 <form id="checklistForm">
                     <div class="checklist-item">
@@ -97,6 +102,19 @@
                         <label><input type="radio" name="interfaceNone" value="yes"> 是</label>
                         <label><input type="radio" name="interfaceNone" value="no"> 否</label>
                     </div>
+                    <div class="cr-name-input-container">
+                        <button type="button" id="checkInterfaceBtn" class="check-btn">检查</button>
+                    </div>
+                    <div id="interfaceResult"></div>
+                    <div class="checklist-item">
+                        <span>7. 概要设计文档中接口是否存在"无"或"不涉及"</span>
+                        <label><input type="radio" name="designInterfaceNone" value="yes"> 是</label>
+                        <label><input type="radio" name="designInterfaceNone" value="no"> 否</label>
+                    </div>
+                    <div class="cr-name-input-container">
+                        <button type="button" id="checkDesignInterfaceBtn" class="check-btn">检查</button>
+                    </div>
+                    <div id="designInterfaceResult"></div>
                 </form>
             </div>
         </div>

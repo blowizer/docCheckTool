@@ -431,3 +431,50 @@ button:hover {
     margin-bottom: 12px;
     font-size: 16px;
 }
+
+/* 一键检查按钮样式 */
+.one-click-check-container {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px dashed #dee2e6;
+}
+
+.one-click-btn {
+    background-color: #007bff !important;
+    color: white !important;
+    padding: 12px 24px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: auto !important;
+    min-width: 120px !important;
+}
+
+.one-click-btn:hover {
+    background-color: #0056b3 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.one-click-btn:disabled {
+    background-color: #6c757d !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.one-click-btn.checking {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.one-click-btn.success {
+    background-color: #28a745 !important;
+    color: white !important;
+}
