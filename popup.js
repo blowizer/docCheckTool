@@ -398,14 +398,8 @@ function checkRequirementTitle() {
             const isMatch = docTitle === inputTitle;
             // 更新检查项状态
             updateChecklistStatus('requirementTitle', isMatch);
-            // 确保错误详情能正确显示
-            setTimeout(() => {
-                if (!isMatch) {
-                    showTitleErrorDetails('requirementTitle', docTitle, inputTitle);
-                } else {
-                    hideTitleErrorDetails('requirementTitle');
-                }
-            }, 100);
+            // 总是显示结果，无论通过还是不通过
+            showTitleErrorDetails('requirementTitle', docTitle, inputTitle);
             // 恢复按钮状态
             checkBtn.disabled = false;
             checkBtn.textContent = '检查';
@@ -445,22 +439,29 @@ function showErrorDetails(itemName, requirementMatch, designMatch, expectedRequi
     errorDetails.className = 'error-details';
     errorDetails.id = `${itemName}-error-details`;
 
-    let errorContent = '<div class="error-title">文档名称不匹配详情：</div>';
+    let errorContent = '';
+    if (requirementMatch && designMatch) {
+        // 通过时显示绿色成功信息
+        errorContent = '<div class="error-title" style="color:green;">✓ 文档名称检查通过！</div>';
+    } else {
+        // 不通过时显示错误详情
+        errorContent = '<div class="error-title">文档名称不匹配详情：</div>';
 
-    if (!requirementMatch) {
-        errorContent += `<div class="error-item">
-            <span class="error-label">需求文档：</span><br>
-            <span class="error-expected">期望：${expectedRequirementName}</span><br>
-            <span class="error-actual">实际：${actualRequirementName}</span>
-        </div>`;
-    }
+        if (!requirementMatch) {
+            errorContent += `<div class="error-item">
+                <span class="error-label">需求文档：</span><br>
+                <span class="error-expected">期望：${expectedRequirementName}</span><br>
+                <span class="error-actual">实际：${actualRequirementName}</span>
+            </div>`;
+        }
 
-    if (!designMatch) {
-        errorContent += `<div class="error-item">
-            <span class="error-label">概要设计文档：</span><br>
-            <span class="error-expected">期望：${expectedDesignName}</span><br>
-            <span class="error-actual">实际：${actualDesignName}</span>
-        </div>`;
+        if (!designMatch) {
+            errorContent += `<div class="error-item">
+                <span class="error-label">概要设计文档：</span><br>
+                <span class="error-expected">期望：${expectedDesignName}</span><br>
+                <span class="error-actual">实际：${actualDesignName}</span>
+            </div>`;
+        }
     }
 
     errorDetails.innerHTML = errorContent;
@@ -487,20 +488,38 @@ function showTitleErrorDetails(itemName, docTitle, inputTitle) {
     hideTitleErrorDetails(itemName);
 
     const checklistItem = document.querySelector(`input[name="${itemName}"]`).closest('.checklist-item');
+    if (!checklistItem) {
+        console.error(`找不到检查项: ${itemName}`);
+        return;
+    }
+
     const errorDetails = document.createElement('div');
     errorDetails.className = 'error-details';
     errorDetails.id = `${itemName}-error-details`;
 
-    let errorContent = '<div class="error-title">需求标题不匹配详情：</div>';
+    let errorContent = '';
+    if (docTitle === inputTitle) {
+        // 通过时显示绿色成功信息
+        errorContent = '<div class="error-title" style="color:green;">✓ 需求标题检查通过！</div>';
+    } else {
+        // 不通过时显示错误详情
+        errorContent = '<div class="error-title">需求标题不匹配详情：</div>';
 
-    errorContent += `<div class="error-item">
-        <span class="error-label">文档标题：</span><br>
-        <span class="error-expected">期望：${docTitle}</span><br>
-        <span class="error-actual">实际：${inputTitle}</span>
-    </div>`;
+        errorContent += `<div class="error-item">
+            <span class="error-label">文档标题：</span><br>
+            <span class="error-expected">期望：${docTitle}</span><br>
+            <span class="error-actual">实际：${inputTitle}</span>
+        </div>`;
+    }
 
     errorDetails.innerHTML = errorContent;
-    checklistItem.parentNode.insertBefore(errorDetails, checklistItem.nextSibling);
+
+    // 确保插入到正确位置
+    if (checklistItem.parentNode) {
+        checklistItem.parentNode.insertBefore(errorDetails, checklistItem.nextSibling);
+    } else {
+        console.error(`检查项 ${itemName} 的父节点不存在`);
+    }
 }
 
 // 隐藏标题错误详情
@@ -1079,13 +1098,8 @@ async function checkCRNameAsync() {
 
         updateChecklistStatus('docName', isAllMatch);
 
-        if (!isAllMatch) {
-            console.log('显示CR名称错误详情');
-            showErrorDetails('docName', requirementMatch, designMatch, expectedRequirementName, expectedDesignName, requirementFile.name, designFile.name);
-        } else {
-            console.log('隐藏CR名称错误详情');
-            hideErrorDetails('docName');
-        }
+        // 总是显示结果，无论通过还是不通过
+        showErrorDetails('docName', requirementMatch, designMatch, expectedRequirementName, expectedDesignName, requirementFile.name, designFile.name);
 
         resolve();
     });
@@ -1111,14 +1125,8 @@ async function checkRequirementTitleAsync() {
 
                 updateChecklistStatus('requirementTitle', isMatch);
 
-                // 确保错误详情能正确显示
-                setTimeout(() => {
-                    if (!isMatch) {
-                        showTitleErrorDetails('requirementTitle', docTitle, inputTitle);
-                    } else {
-                        hideTitleErrorDetails('requirementTitle');
-                    }
-                }, 100);
+                // 总是显示结果，无论通过还是不通过
+                showTitleErrorDetails('requirementTitle', docTitle, inputTitle);
 
                 resolve();
             })
@@ -1374,7 +1382,7 @@ async function checkInterfaceRequirementAsync() {
                     }
                 }
 
-                let notPassPattern = /^(无|不涉及|本需求不涉及外部接口)$/;
+                let notPassPattern = /^(无|不涉及|本需求不涉及外部接口*)$/;
                 let isPass = found && !notPassPattern.test(resultText);
 
                 updateChecklistStatus('interfaceNone', isPass);
@@ -1437,7 +1445,7 @@ async function checkDesignInterfaceRequirementAsync() {
                         }
                     }
 
-                    let notPassPattern = /^(无|不涉及|本需求不涉及.*接口)$/;
+                    let notPassPattern = /^(无|不涉及|本需求不涉及.*接口*)$/;
                     let isPass = found && !notPassPattern.test(resultText);
 
                     results.push({
